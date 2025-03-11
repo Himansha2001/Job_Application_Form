@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import './App.css';
 
 function App() {
   const [formData, setFormData] = useState({
@@ -10,79 +10,100 @@ function App() {
   });
 
   const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    if (name === "cv") {
-      setFormData({ ...formData, [name]: files[0] });
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     const data = new FormData();
-    data.append("name", formData.name);
-    data.append("email", formData.email);
-    data.append("phone", formData.phone);
-    data.append("cv", formData.cv);
+    data.append('name', formData.name);
+    data.append('email', formData.email);
+    data.append('phone', formData.phone);
+    data.append('cv', formData.cv);
 
     try {
-      const response = await axios.post("http://localhost:5000/submit", data, {
-        headers: { "Content-Type": "multipart/form-data" },
+      const response = await fetch('/api/submit', {
+        method: 'POST',
+        body: data,
       });
-      alert("Application submitted successfully!");
+      
+      const result = await response.json();
+      if (response.ok) {
+        alert('Application submitted successfully!');
+      } else {
+        alert('Error: ' + result.message);
+      }
     } catch (error) {
-      console.error("Error submitting application:", error);
-      alert("Failed to submit application.");
+      alert('Error submitting application: ' + error.message);
     }
   };
 
+  const handleFileChange = (e) => {
+    setFormData(prev => ({
+      ...prev,
+      cv: e.target.files[0]
+    }));
+  };
+
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Job Application Form</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Name:</label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label>Email:</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label>Phone:</label>
-          <input
-            type="tel"
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label>Upload CV (PDF/DOCX):</label>
-          <input
-            type="file"
-            name="cv"
-            accept=".pdf,.docx"
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <button type="submit">Submit</button>
-      </form>
+    <div className="App">
+      <header className="App-header">
+        <h1>Job Application Form</h1>
+      </header>
+      <main>
+        <form onSubmit={handleSubmit}>
+          <div>
+            <label htmlFor="name">Name:</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="email">Email:</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="phone">Phone:</label>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="cv">CV:</label>
+            <input
+              type="file"
+              id="cv"
+              name="cv"
+              onChange={handleFileChange}
+              accept=".pdf,.doc,.docx"
+              required
+            />
+          </div>
+          <button type="submit">Submit Application</button>
+        </form>
+      </main>
     </div>
   );
 }
