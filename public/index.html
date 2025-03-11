@@ -1,8 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Job Application Form"
+    />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     <title>Job Application Form</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -214,62 +222,8 @@
     </style>
   </head>
   <body>
-    <div class="container">
-      <div class="form-section">
-        <div class="logo">
-          <img src="logoh.png" alt="Company Logo">
-          <span>Himansha Thunmuduna</span>
-        </div>
-        <h1>Apply for this role</h1>
-        <a href="#" class="job-title">• Full time • Remote →</a>
-        
-        <form id="application-form" enctype="multipart/form-data">
-          <div class="form-group">
-            <label for="name">Full name*</label>
-            <input type="text" id="name" name="name" required placeholder="Enter your name">
-          </div>
-
-          <div class="form-group">
-            <label for="email">Email*</label>
-            <input type="email" id="email" name="email" required placeholder="Enter your email">
-          </div>
-
-          <div class="form-group">
-            <label for="phone">Phone*</label>
-            <input type="tel" id="phone" name="phone" required placeholder="Enter your phone number">
-          </div>
-
-          <div class="form-group">
-            <label for="cv">Upload CV*</label>
-            <input type="file" id="cv" name="cv" accept=".pdf,.doc,.docx" required>
-            <div id="upload-progress">
-              <div class="progress-bar">
-                <div class="progress-bar-fill" style="width: 0%"></div>
-              </div>
-            </div>
-          </div>
-
-          <button type="submit" id="submit-btn" style="background-color: #3b82f6; color: white; padding: 12px 24px; border: none; border-radius: 6px; font-weight: 500; cursor: pointer; width: 100%;">Submit</button>
-        </form>
-
-        <div id="success-message"></div>
-        <div id="error-message"></div>
-      </div>
-
-      <div class="image-section">
-        <div class="image-overlay"></div>
-        <div class="awards">
-          <!-- Add your award badges here -->
-        </div>
-        <div class="info-badges">
-          
-          
-        </div>
-        <p class="message">We believe in hiring smart, diverse, and interesting people and giving them full autonomy to do the best work of their careers. We'd love to chat to you.</p>
-        <p class="author">Himansha Thunmuduna</p>
-        <p class="author-title"></p>
-      </div>
-    </div>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
 
     <script>
       document.addEventListener('DOMContentLoaded', function() {
