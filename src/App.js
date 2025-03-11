@@ -1,5 +1,38 @@
-import React, { useState } from "react";
-import './App.css';
+import React, { useState } from 'react';
+import {
+  Box,
+  Container,
+  Paper,
+  Typography,
+  TextField,
+  Button,
+  LinearProgress,
+  Alert,
+  Stack,
+  Grid,
+  IconButton,
+  useTheme,
+  useMediaQuery
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import DeleteIcon from '@mui/icons-material/Delete';
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
+
+const VisuallyHiddenInput = styled('input')`
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  white-space: nowrap;
+  width: 1px;
+`;
 
 function App() {
   const [formData, setFormData] = useState({
@@ -9,6 +42,10 @@ function App() {
     cv: null,
   });
   const [status, setStatus] = useState({ loading: false, error: null, success: false });
+  const [fileName, setFileName] = useState("");
+  
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -16,6 +53,38 @@ function App() {
       ...prev,
       [name]: value
     }));
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        alert('File size too large. Please select a file under 10MB.');
+        e.target.value = '';
+        return;
+      }
+      
+      const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+      if (!allowedTypes.includes(file.type)) {
+        alert('Invalid file type. Please select a PDF or Word document.');
+        e.target.value = '';
+        return;
+      }
+      
+      setFormData(prev => ({
+        ...prev,
+        cv: file
+      }));
+      setFileName(file.name);
+    }
+  };
+
+  const handleRemoveFile = () => {
+    setFormData(prev => ({
+      ...prev,
+      cv: null
+    }));
+    setFileName("");
   };
 
   const handleSubmit = async (e) => {
@@ -38,16 +107,13 @@ function App() {
     data.append('cv', formData.cv);
 
     try {
-      console.log('Submitting form data...');
       const response = await fetch('/api/submit', {
         method: 'POST',
         body: data,
       });
       
-      console.log('Response status:', response.status);
-      const contentType = response.headers.get("content-type");
-      
       if (!response.ok) {
+        const contentType = response.headers.get("content-type");
         let errorMessage;
         if (contentType && contentType.includes("application/json")) {
           const errorData = await response.json();
@@ -60,18 +126,10 @@ function App() {
       }
 
       const result = await response.json();
-      console.log('Submission result:', result);
-      
       setStatus({ loading: false, error: null, success: true });
       setFormData({ name: "", email: "", phone: "", cv: null });
-      
-      // Reset file input
-      const fileInput = document.querySelector('input[type="file"]');
-      if (fileInput) fileInput.value = '';
-      
-      alert('Application submitted successfully!');
+      setFileName("");
     } catch (error) {
-      console.error('Submission error:', error);
       setStatus({ 
         loading: false, 
         error: error.message || 'Failed to submit application. Please try again.', 
@@ -80,102 +138,179 @@ function App() {
     }
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (file.size > 10 * 1024 * 1024) { // 10MB limit
-        alert('File size too large. Please select a file under 10MB.');
-        e.target.value = '';
-        return;
-      }
-      
-      const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-      if (!allowedTypes.includes(file.type)) {
-        alert('Invalid file type. Please select a PDF or Word document.');
-        e.target.value = '';
-        return;
-      }
-      
-      setFormData(prev => ({
-        ...prev,
-        cv: file
-      }));
-    }
-  };
-
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Job Application Form</h1>
-      </header>
-      <main>
-        <form onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor="name">Name:</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              disabled={status.loading}
-            />
-          </div>
-          <div>
-            <label htmlFor="email">Email:</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              disabled={status.loading}
-            />
-          </div>
-          <div>
-            <label htmlFor="phone">Phone:</label>
-            <input
-              type="tel"
-              id="phone"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              required
-              disabled={status.loading}
-              pattern="[0-9+\-\s]+"
-              title="Please enter a valid phone number"
-            />
-          </div>
-          <div>
-            <label htmlFor="cv">CV (PDF or Word, max 10MB):</label>
-            <input
-              type="file"
-              id="cv"
-              name="cv"
-              onChange={handleFileChange}
-              accept=".pdf,.doc,.docx"
-              required
-              disabled={status.loading}
-            />
-          </div>
-          {status.error && (
-            <div className="error-message">
-              {status.error}
-            </div>
-          )}
-          {status.success && (
-            <div className="success-message">
-              Application submitted successfully!
-            </div>
-          )}
-          <button type="submit" disabled={status.loading}>
-            {status.loading ? 'Submitting...' : 'Submit Application'}
-          </button>
-        </form>
-      </main>
-    </div>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        backgroundColor: '#f5f5f5',
+        py: 4,
+        px: 2
+      }}
+    >
+      <Container maxWidth="md">
+        <Paper
+          elevation={3}
+          sx={{
+            p: { xs: 2, sm: 4 },
+            borderRadius: 2,
+            background: 'linear-gradient(to right bottom, #ffffff, #fafafa)'
+          }}
+        >
+          <Typography
+            variant="h4"
+            component="h1"
+            gutterBottom
+            sx={{
+              fontWeight: 700,
+              color: '#1a237e',
+              textAlign: 'center',
+              mb: 4
+            }}
+          >
+            Job Application Form
+          </Typography>
+
+          <form onSubmit={handleSubmit}>
+            <Grid container spacing={3}>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Full Name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                  disabled={status.loading}
+                  variant="outlined"
+                />
+              </Grid>
+              
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  disabled={status.loading}
+                  variant="outlined"
+                />
+              </Grid>
+              
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Phone"
+                  name="phone"
+                  type="tel"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  required
+                  disabled={status.loading}
+                  variant="outlined"
+                  inputProps={{
+                    pattern: "[0-9+\\-\\s]+",
+                    title: "Please enter a valid phone number"
+                  }}
+                />
+              </Grid>
+
+              <Grid item xs={12}>
+                <Paper
+                  variant="outlined"
+                  sx={{
+                    p: 3,
+                    textAlign: 'center',
+                    borderStyle: 'dashed',
+                    borderColor: fileName ? 'primary.main' : 'grey.400',
+                    bgcolor: 'grey.50'
+                  }}
+                >
+                  {fileName ? (
+                    <Stack
+                      direction="row"
+                      spacing={1}
+                      alignItems="center"
+                      justifyContent="center"
+                    >
+                      <Typography color="primary">{fileName}</Typography>
+                      <IconButton
+                        size="small"
+                        onClick={handleRemoveFile}
+                        color="error"
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Stack>
+                  ) : (
+                    <Button
+                      component="label"
+                      variant="outlined"
+                      startIcon={<CloudUploadIcon />}
+                      sx={{ mb: 1 }}
+                    >
+                      Upload CV
+                      <VisuallyHiddenInput
+                        type="file"
+                        onChange={handleFileChange}
+                        accept=".pdf,.doc,.docx"
+                        required
+                        disabled={status.loading}
+                      />
+                    </Button>
+                  )}
+                  <Typography variant="caption" display="block" color="text.secondary">
+                    Accepted formats: PDF, DOC, DOCX (Max 10MB)
+                  </Typography>
+                </Paper>
+              </Grid>
+
+              {status.loading && (
+                <Grid item xs={12}>
+                  <LinearProgress />
+                </Grid>
+              )}
+
+              {status.error && (
+                <Grid item xs={12}>
+                  <Alert severity="error">{status.error}</Alert>
+                </Grid>
+              )}
+
+              {status.success && (
+                <Grid item xs={12}>
+                  <Alert severity="success">
+                    Application submitted successfully! We'll be in touch soon.
+                  </Alert>
+                </Grid>
+              )}
+
+              <Grid item xs={12}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  fullWidth
+                  size="large"
+                  disabled={status.loading}
+                  sx={{
+                    mt: 2,
+                    py: 1.5,
+                    bgcolor: 'primary.main',
+                    '&:hover': {
+                      bgcolor: 'primary.dark',
+                    },
+                  }}
+                >
+                  {status.loading ? 'Submitting...' : 'Submit Application'}
+                </Button>
+              </Grid>
+            </Grid>
+          </form>
+        </Paper>
+      </Container>
+    </Box>
   );
 }
 
