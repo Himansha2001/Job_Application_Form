@@ -396,15 +396,12 @@ app.use((err, req, res, next) => {
   });
 });
 
-const PORT = process.env.PORT || 5001;
+// Remove the app.listen part and export the app for Vercel
+module.exports = app;
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-}).on('error', (err) => {
-  if (err.code === 'EADDRINUSE') {
-    console.error(`Port ${PORT} is already in use. Please try a different port or kill the process using this port.`);
-  } else {
-    console.error('Error starting server:', err);
-  }
-  process.exit(1);
+// Add error logging for Google credentials
+console.log('Google Credentials Status:', {
+  hasCredentials: !!process.env.GOOGLE_CREDENTIALS,
+  credentialsLength: process.env.GOOGLE_CREDENTIALS ? process.env.GOOGLE_CREDENTIALS.length : 0,
+  spreadsheetId: process.env.SPREADSHEET_ID
 });
