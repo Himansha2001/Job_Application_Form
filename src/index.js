@@ -22,9 +22,7 @@ const s3 = new AWS.S3({
 
 // Google Sheets API setup with OAuth2
 const auth = new google.auth.GoogleAuth({
-  credentials: process.env.GOOGLE_CREDENTIALS_BASE64 
-    ? JSON.parse(Buffer.from(process.env.GOOGLE_CREDENTIALS_BASE64, 'base64').toString())
-    : require('./google-credentials.json'),
+  credentials: JSON.parse(process.env.GOOGLE_CREDENTIALS || '{}'),
   scopes: ['https://www.googleapis.com/auth/spreadsheets']
 });
 
