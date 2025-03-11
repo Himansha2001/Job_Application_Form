@@ -231,7 +231,7 @@ function scheduleFollowUpEmail(applicantEmail, name) {
 }
 
 // Endpoint to handle form submission
-app.post("/submit", upload.single("cv"), async (req, res) => {
+app.post("/api/submit", upload.single("cv"), async (req, res) => {
   console.log('Starting form submission process...');
   const { name, email, phone } = req.body;
   const cvFile = req.file;
