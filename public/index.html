@@ -1,43 +1,351 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Web site created using create-react-app"
-    />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Application Form</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Inter', sans-serif;
+      }
 
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
-    <title>React App</title>
+      body {
+        min-height: 100vh;
+        background-color: #f5f5f5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 1200px;
+        height: 90vh;
+        margin: 20px;
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        display: flex;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .form-section {
+        flex: 1;
+        padding: 40px;
+        overflow-y: auto;
+      }
+
+      .image-section {
+        flex: 1;
+        background-image: url('/src/img/96160.jpg');
+        background-size: cover;
+        background-position: 100% center;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 40px;
+        color: white;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      }
+
+      .image-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.6));
+      }
+
+      .awards {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .award-badge {
+        background: rgba(255, 255, 255, 0.9);
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 30px;
+      }
+
+      .logo img {
+        width: 32px;
+        height: 32px;
+      }
+
+      h1 {
+        font-size: 24px;
+        margin-bottom: 10px;
+        color: #111827;
+      }
+
+      .job-title {
+        color: #3b82f6;
+        text-decoration: none;
+        margin-bottom: 30px;
+        display: block;
+        font-weight: 500;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        color: #374151;
+        font-weight: 500;
+      }
+
+      input[type="text"],
+      input[type="email"],
+      input[type="tel"],
+      input[type="url"] {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 14px;
+        transition: border-color 0.2s;
+      }
+
+      input[type="text"]:focus,
+      input[type="email"]:focus,
+      input[type="tel"]:focus,
+      input[type="url"]:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+
+      .info-badges {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .info-badge {
+        background: rgba(255, 255, 255, 0.9);
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .message {
+        font-size: 24px;
+        line-height: 1.4;
+        margin-bottom: 20px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .author {
+        font-size: 16px;
+        font-weight: 500;
+        position: relative;
+        z-index: 1;
+      }
+
+      .author-title {
+        font-size: 14px;
+        opacity: 0.9;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Keep your existing form-specific styles */
+      #upload-progress {
+        display: none;
+        margin-top: 10px;
+      }
+
+      .progress-bar {
+        height: 4px;
+        background-color: #e5e7eb;
+        border-radius: 2px;
+        overflow: hidden;
+      }
+
+      .progress-bar-fill {
+        height: 100%;
+        background-color: #3b82f6;
+        transition: width 0.3s ease;
+      }
+
+      #success-message, #error-message {
+        display: none;
+        margin-top: 10px;
+        padding: 10px;
+        border-radius: 6px;
+      }
+
+      #success-message {
+        background-color: #dcfce7;
+        color: #166534;
+      }
+
+      #error-message {
+        background-color: #fee2e2;
+        color: #991b1b;
+      }
+    </style>
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
+    <div class="container">
+      <div class="form-section">
+        <div class="logo">
+          <img src="logoh.png" alt="Company Logo">
+          <span>Himansha Thunmuduna</span>
+        </div>
+        <h1>Apply for this role</h1>
+        <a href="#" class="job-title">• Full time • Remote →</a>
+        
+        <form id="application-form" enctype="multipart/form-data">
+          <div class="form-group">
+            <label for="name">Full name*</label>
+            <input type="text" id="name" name="name" required placeholder="Enter your name">
+          </div>
 
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
+          <div class="form-group">
+            <label for="email">Email*</label>
+            <input type="email" id="email" name="email" required placeholder="Enter your email">
+          </div>
 
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
+          <div class="form-group">
+            <label for="phone">Phone*</label>
+            <input type="tel" id="phone" name="phone" required placeholder="Enter your phone number">
+          </div>
+
+          <div class="form-group">
+            <label for="cv">Upload CV*</label>
+            <input type="file" id="cv" name="cv" accept=".pdf,.doc,.docx" required>
+            <div id="upload-progress">
+              <div class="progress-bar">
+                <div class="progress-bar-fill" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" id="submit-btn" style="background-color: #3b82f6; color: white; padding: 12px 24px; border: none; border-radius: 6px; font-weight: 500; cursor: pointer; width: 100%;">Submit</button>
+        </form>
+
+        <div id="success-message"></div>
+        <div id="error-message"></div>
+      </div>
+
+      <div class="image-section">
+        <div class="image-overlay"></div>
+        <div class="awards">
+          <!-- Add your award badges here -->
+        </div>
+        <div class="info-badges">
+          
+          
+        </div>
+        <p class="message">We believe in hiring smart, diverse, and interesting people and giving them full autonomy to do the best work of their careers. We'd love to chat to you.</p>
+        <p class="author">Himansha Thunmuduna</p>
+        <p class="author-title"></p>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('application-form');
+        const fileInput = document.getElementById('cv');
+        const submitBtn = document.getElementById('submit-btn');
+        const uploadProgress = document.getElementById('upload-progress');
+        const progressBarFill = document.querySelector('.progress-bar-fill');
+        const successMessage = document.getElementById('success-message');
+        const errorMessage = document.getElementById('error-message');
+
+        form.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          
+          // Reset messages
+          successMessage.style.display = 'none';
+          errorMessage.style.display = 'none';
+          
+          // Show progress bar
+          uploadProgress.style.display = 'block';
+          progressBarFill.style.width = '0%';
+          
+          // Disable submit button
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Submitting...';
+
+          const formData = new FormData(form);
+
+          try {
+            // Simulate progress
+            let width = 0;
+            const progressInterval = setInterval(() => {
+              if (width < 90) {
+                width += 10;
+                progressBarFill.style.width = width + '%';
+              }
+            }, 500);
+
+            const response = await fetch('/submit', {
+              method: 'POST',
+              body: formData
+            });
+
+            clearInterval(progressInterval);
+            progressBarFill.style.width = '100%';
+
+            const data = await response.json();
+
+            if (response.ok) {
+              successMessage.textContent = 'Application submitted successfully!';
+              successMessage.style.display = 'block';
+              form.reset();
+            } else {
+              throw new Error(data.message || 'Failed to submit application');
+            }
+          } catch (error) {
+            errorMessage.textContent = error.message;
+            errorMessage.style.display = 'block';
+            progressBarFill.style.width = '0%';
+          } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit';
+            setTimeout(() => {
+              uploadProgress.style.display = 'none';
+            }, 1000);
+          }
+        });
+
+        // File input change handler
+        fileInput.addEventListener('change', function(e) {
+          if (e.target.files.length > 0) {
+            const fileName = e.target.files[0].name;
+            // You can add code here to display the selected file name if needed
+          }
+        });
+      });
+    </script>
   </body>
 </html>

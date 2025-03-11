@@ -1,0 +1,19 @@
+{
+  "name": "job-application-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@google-cloud/storage": "^7.15.2",
+    "axios": "^1.8.1",
+    "express": "^4.21.2",
+    "googleapis": "^105.0.0",
+    "multer": "^1.4.5-lts.1"
+  }
+}
