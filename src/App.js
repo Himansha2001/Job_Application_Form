@@ -8,6 +8,7 @@ function App() {
     phone: "",
     cv: null,
   });
+  const [status, setStatus] = useState({ loading: false, error: null, success: false });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -19,6 +20,7 @@ function App() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setStatus({ loading: true, error: null, success: false });
     
     const data = new FormData();
     data.append('name', formData.name);
@@ -32,14 +34,32 @@ function App() {
         body: data,
       });
       
-      const result = await response.json();
-      if (response.ok) {
-        alert('Application submitted successfully!');
-      } else {
-        alert('Error: ' + result.message);
+      // First check if the response is ok
+      if (!response.ok) {
+        // Try to get error message from response
+        let errorMessage;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorData.error || 'Submission failed';
+        } catch (e) {
+          // If parsing JSON fails, use status text
+          errorMessage = `Submission failed: ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
       }
+
+      // Try to parse successful response
+      const result = await response.json();
+      setStatus({ loading: false, error: null, success: true });
+      setFormData({ name: "", email: "", phone: "", cv: null }); // Reset form
+      alert('Application submitted successfully!');
     } catch (error) {
-      alert('Error submitting application: ' + error.message);
+      setStatus({ 
+        loading: false, 
+        error: error.message || 'Failed to submit application. Please try again.', 
+        success: false 
+      });
+      alert(error.message || 'Failed to submit application. Please try again.');
     }
   };
 
@@ -66,6 +86,7 @@ function App() {
               value={formData.name}
               onChange={handleChange}
               required
+              disabled={status.loading}
             />
           </div>
           <div>
@@ -77,6 +98,7 @@ function App() {
               value={formData.email}
               onChange={handleChange}
               required
+              disabled={status.loading}
             />
           </div>
           <div>
@@ -88,6 +110,7 @@ function App() {
               value={formData.phone}
               onChange={handleChange}
               required
+              disabled={status.loading}
             />
           </div>
           <div>
@@ -99,9 +122,22 @@ function App() {
               onChange={handleFileChange}
               accept=".pdf,.doc,.docx"
               required
+              disabled={status.loading}
             />
           </div>
-          <button type="submit">Submit Application</button>
+          {status.error && (
+            <div className="error-message">
+              {status.error}
+            </div>
+          )}
+          {status.success && (
+            <div className="success-message">
+              Application submitted successfully!
+            </div>
+          )}
+          <button type="submit" disabled={status.loading}>
+            {status.loading ? 'Submitting...' : 'Submit Application'}
+          </button>
         </form>
       </main>
     </div>
